@@ -1,5 +1,7 @@
 from numpy import linalg as LA, array
 
+from readercsv import vals
+
 
 def get_str_number(number, digits=2):
     return f"%.{digits}f" % number
@@ -28,8 +30,8 @@ k = array([[452.0991333,-1628.177587,-3390.285903,-38217.02879,-179.7742845,3542
            [-1224.16785,3236.685197,877.6233973,-304755.2012,358.5242663,-12707.32282,8.113545484,-242.6995646,-719.7067143,16580.35829]])
 
 kw, kv = LA.eig(kn)
-w, v = LA.eig(k)
-
+# w, v = LA.eig(k)
+w, v = LA.eig(array(vals))
 
 if __name__ == '__main__':
     print("kw: ")

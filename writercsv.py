@@ -3,7 +3,8 @@ import string
 
 import xlwt
 
-from main import v
+from main import v, w
+from readercsv import vals
 
 book = xlwt.Workbook()
 
@@ -28,5 +29,11 @@ for num in range(len(txt)):
           value = txt[num][index]
           row.write(index, value)
 
+txt = w
+row = sheet1.row(len(txt)+1)
+for index, col in enumerate(cols):
+    value = txt[index]
+    row.write(index, value)
+
 # Save the result
-book.save("test.xls")
+book.save("numbers.xls")
