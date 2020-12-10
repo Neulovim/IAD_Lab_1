@@ -1,6 +1,6 @@
 from numpy import linalg as LA, array
 
-from readercsv import vals
+from Lab1.readercsv import vals
 
 
 def get_str_number(number, digits=2):

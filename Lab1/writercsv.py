@@ -3,8 +3,7 @@ import string
 
 import xlwt
 
-from main import v, w
-from readercsv import vals
+from Lab1.main import v, w
 
 book = xlwt.Workbook()
 
