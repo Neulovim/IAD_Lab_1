@@ -3,6 +3,7 @@ import xlrd
 from sklearn.cluster import KMeans
 import numpy as np
 from sklearn.datasets import make_blobs
+from yellowbrick.cluster import KElbowVisualizer
 
 
 def read_csv(name: str, index: int):
@@ -18,9 +19,16 @@ Y = np.array([i for i in range(1, 57)])
 # Y = np.array([i for i in range(1, 9)])
 
 # kmeans = KMeans(n_clusters=8, random_state=0).fit(X)
+# kmeans = KMeans(n_clusters=4)
+model = KMeans()
+visualizer = KElbowVisualizer(model, k=(2, 12))
+visualizer.fit(X)
+visualizer.show()
+
 kmeans = KMeans(n_clusters=4)
 kmeans.fit(X)
 y_kmeans = kmeans.predict(X)
+
 # print(y_kmeans)
 # print(kmeans.labels_)
 
