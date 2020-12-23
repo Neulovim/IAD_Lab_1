@@ -1,3 +1,5 @@
+from collections import Counter
+
 import matplotlib.pyplot as plt
 import xlrd
 from sklearn import preprocessing
@@ -7,6 +9,8 @@ from sklearn.datasets import make_blobs
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from yellowbrick.cluster import KElbowVisualizer
+
+from Lab2.main2 import Forel
 
 
 def read_csv(name: str, index: int):
@@ -33,16 +37,52 @@ print(pca_X)
 model = KMeans()
 visualizer = KElbowVisualizer(model, k=(2, 12))
 visualizer.fit(pca_X)
-visualizer.show()
+# visualizer.show()
 
 kmeans = KMeans(n_clusters=visualizer.elbow_value_)
 kmeans.fit(pca_X)
 y_kmeans = kmeans.predict(pca_X)
+print(len(y_kmeans))
 
-plt.subplot(111)
+plt.subplot(121)
 plt.scatter(pca_X[:, 0], pca_X[:, 1], c=y_kmeans, cmap="viridis")
-plt.title("Unevenly Sized Blobs")
+plt.title("K-means")
+# plt.show()
+
+# kmeans = KMeans(pca_X)
+# kmeans.run()
+# kmeans.plot(column_1_number=0, column_2_number=1)
+
+# Нормируем данные
+# min_max_scaler = preprocessing.MinMaxScaler()
+# data = min_max_scaler.fit_transform(pca_X)
+
+y_kmeans_unique = len(Counter(y_kmeans).keys())
+print("y_kmeans_unique")
+print(y_kmeans_unique)
+y_forel_unique = 0
+radius = 0.8
+forel = None
+forel_X = None
+# while y_forel_unique < y_kmeans_unique:
+forel = Forel(pca_X, radius=radius)
+forel.run()
+forel_X = np.array(forel.result)
+print(len(forel.clusters))
+y_forel_unique = len(Counter(forel.clusters).keys())
+# radius += 0.1
+print("y_forel_unique")
+print(y_forel_unique)
+print("radius")
+print(radius)
+# input()
+y_forel = np.array(forel.clusters)
+# forel.plot(column_1_number=0, column_2_number=1)
+plt.subplot(122)
+plt.scatter(forel_X[:, 0], forel_X[:, 1], c=y_forel, cmap="viridis")
+plt.title("Forel")
 plt.show()
+
 
 # scaler = MinMaxScaler()
 # scaler.fit(pca_X)
