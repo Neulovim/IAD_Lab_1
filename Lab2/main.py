@@ -22,7 +22,7 @@ X = np.array(read_csv('lab2.xlsx', 1))
 Y = np.array([i for i in range(1, 57)])
 
 # normalize the data attributes
-normalized_X = preprocessing.normalize(X)
+normalized_X = MinMaxScaler().fit_transform(X)
 
 pca = PCA(n_components=2)
 pca.fit(normalized_X)
@@ -44,16 +44,16 @@ plt.scatter(pca_X[:, 0], pca_X[:, 1], c=y_kmeans, cmap="viridis")
 plt.title("Unevenly Sized Blobs")
 plt.show()
 
-scaler = MinMaxScaler()
-scaler.fit(pca_X)
-scaler_X = scaler.transform(pca_X)
-print("scaler_X")
-print(scaler_X)
-
-plt.subplot(111)
-plt.scatter(scaler_X[:, 0], scaler_X[:, 1], c=y_kmeans, cmap="viridis")
-plt.title("Unevenly Sized Blobs")
-plt.show()
+# scaler = MinMaxScaler()
+# scaler.fit(pca_X)
+# scaler_X = scaler.transform(pca_X)
+# print("scaler_X")
+# print(scaler_X)
+#
+# plt.subplot(111)
+# plt.scatter(scaler_X[:, 0], scaler_X[:, 1], c=y_kmeans, cmap="viridis")
+# plt.title("Unevenly Sized Blobs")
+# plt.show()
 
 # print(y_kmeans)
 # print(kmeans.labels_)
