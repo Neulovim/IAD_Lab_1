@@ -7,6 +7,8 @@ from sklearn.cluster import KMeans
 import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.decomposition import PCA
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.feature_selection import RFE
 from sklearn.preprocessing import MinMaxScaler
 from yellowbrick.cluster import KElbowVisualizer
 
@@ -21,68 +23,109 @@ def read_csv(name: str, index: int):
     return vals
 
 
-np.random.seed(5)
-X = np.array(read_csv('lab2.xlsx', 1))
-Y = np.array([i for i in range(1, 57)])
+def analysis_feature(slide_id):
+    X = np.array(read_csv('lab2.xlsx', slide_id))
 
-# normalize the data attributes
-normalized_X = MinMaxScaler().fit_transform(X)
+    # normalize the data attributes
+    normalized_X = MinMaxScaler().fit_transform(X)
 
-pca = PCA(n_components=2)
-pca.fit(normalized_X)
-pca_X = pca.transform(normalized_X)
-print("pca_X")
-print(pca_X)
+    pca = PCA(n_components=2)
+    pca.fit(normalized_X)
+    pca_X = pca.transform(normalized_X)
 
-model = KMeans()
-visualizer = KElbowVisualizer(model, k=(2, 12))
-visualizer.fit(pca_X)
-# visualizer.show()
+    model = KMeans()
+    visualizer = KElbowVisualizer(model, k=(2, 12))
+    visualizer.fit(pca_X)
 
-kmeans = KMeans(n_clusters=visualizer.elbow_value_)
-kmeans.fit(pca_X)
-y_kmeans = kmeans.predict(pca_X)
-print(len(y_kmeans))
+    kmeans = KMeans(n_clusters=visualizer.elbow_value_)
+    kmeans.fit(pca_X)
+    y_kmeans = kmeans.predict(pca_X)
+    plt.show()
+    _extraction_feature(normalized_X, y_kmeans, 10)
 
-plt.subplot(121)
-plt.scatter(pca_X[:, 0], pca_X[:, 1], c=y_kmeans, cmap="viridis")
-plt.title("K-means")
-# plt.show()
 
-# kmeans = KMeans(pca_X)
-# kmeans.run()
-# kmeans.plot(column_1_number=0, column_2_number=1)
+def _extraction_feature(x, y, count_tree = 10):
+    # feature extraction
+    model = ExtraTreesClassifier(n_estimators=count_tree)
+    model.fit(x, y)
+    # get importance
+    importance = model.feature_importances_
+    # summarize feature importance
+    for i in range(len(importance)):
+        print("Feature: {}, Score: {}".format(i + 1, importance[i]))
+    # plot feature importance
+    plt.bar([x for x in range(1, len(importance) + 1)], importance)
+    plt.show()
 
-# Нормируем данные
-# min_max_scaler = preprocessing.MinMaxScaler()
-# data = min_max_scaler.fit_transform(pca_X)
 
-y_kmeans_unique = len(Counter(y_kmeans).keys())
-print("y_kmeans_unique")
-print(y_kmeans_unique)
-y_forel_unique = 0
-radius = 0.8
-forel = None
-forel_X = None
-# while y_forel_unique < y_kmeans_unique:
-forel = Forel(pca_X, radius=radius)
-forel.run()
-forel_X = np.array(forel.result)
-print(len(forel.clusters))
-y_forel_unique = len(Counter(forel.clusters).keys())
-# radius += 0.1
-print("y_forel_unique")
-print(y_forel_unique)
-print("radius")
-print(radius)
-# input()
-y_forel = np.array(forel.clusters)
-# forel.plot(column_1_number=0, column_2_number=1)
-plt.subplot(122)
-plt.scatter(forel_X[:, 0], forel_X[:, 1], c=y_forel, cmap="viridis")
-plt.title("Forel")
-plt.show()
+if __name__=="__main__":
+    np.random.seed(5)
+    X = np.array(read_csv('lab2.xlsx', 0))
+    # Y = np.array([i for i in range(1, 57)])
 
+    # normalize the data attributes
+    normalized_X = MinMaxScaler().fit_transform(X)
+
+    pca = PCA(n_components=2)
+    pca.fit(normalized_X)
+    pca_X = pca.transform(normalized_X)
+    print("pca_X")
+    print(pca_X)
+
+    model = KMeans()
+    visualizer = KElbowVisualizer(model, k=(2, 12))
+    visualizer.fit(pca_X)
+    # visualizer.show()
+
+    kmeans = KMeans(n_clusters=visualizer.elbow_value_)
+    kmeans.fit(pca_X)
+    y_kmeans = kmeans.predict(pca_X)
+    print(len(y_kmeans))
+
+    plt.subplot(121)
+    plt.scatter(pca_X[:, 0], pca_X[:, 1], c=y_kmeans, cmap="viridis")
+    plt.title("K-means")
+    # plt.show()
+
+    # kmeans = KMeans(pca_X)
+    # kmeans.run()
+    # kmeans.plot(column_1_number=0, column_2_number=1)
+
+    # Нормируем данные
+    # min_max_scaler = preprocessing.MinMaxScaler()
+    # data = min_max_scaler.fit_transform(pca_X)
+
+    y_kmeans_unique = len(Counter(y_kmeans).keys())
+    print("y_kmeans_unique")
+    print(y_kmeans_unique)
+    y_forel_unique = 0
+    radius = 0.8
+    forel = None
+    forel_X = None
+    # while y_forel_unique < y_kmeans_unique:
+    forel = Forel(pca_X, radius=radius)
+    forel.run()
+    forel_X = np.array(forel.result)
+    print(len(forel.clusters))
+    y_forel_unique = len(Counter(forel.clusters).keys())
+    # radius += 0.1
+    print("y_forel_unique")
+    print(y_forel_unique)
+    print("radius")
+    print(radius)
+    # input()
+    y_forel = np.array(forel.clusters)
+    # forel.plot(column_1_number=0, column_2_number=1)
+    plt.subplot(122)
+    plt.scatter(forel_X[:, 0], forel_X[:, 1], c=y_forel, cmap="viridis")
+    plt.title("Forel")
+    plt.show()
+
+    _extraction_feature(normalized_X, y_kmeans, 10)
+
+    analysis_feature(1)
+    analysis_feature(2)
+    analysis_feature(3)
 
 # scaler = MinMaxScaler()
 # scaler.fit(pca_X)
@@ -193,5 +236,3 @@ plt.show()
 # #     plt.scatter(Yc, centers[:, column], c='black', s=200, alpha=0.5)
 #
 # plt.show()
-
-
